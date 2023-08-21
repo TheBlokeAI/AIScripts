@@ -1,15 +1,16 @@
 #
 # Simple script for listing, creating and deleting branches on Huggingface repos
-# By default it requires that you are logged in to Huggingface Hub, or you can pass a token with --token
+# Create and delete operations require an HF access token
+# By default the scripts assumes you are logged in to Huggingface Hub with `huggingface-cli login`. Alternatively you can pass a token with --token
 #
 
 import argparse
 from huggingface_hub import HfApi
 
-def create_branch(api, repo_id, branch, exist_ok=False):
+def create_branch(api, repo_id, branch):
     try:
         if branch not in get_branches(api, repo_id):
-            api.create_branch(repo_id=repo_id, branch=branch, exist_ok=exist_ok)
+            api.create_branch(repo_id=repo_id, branch=branch)
             print(f"Successfully created branch '{branch}' in repo '{repo_id}'.")
         else:
             print(f"Branch '{branch}' already exists in repo '{repo_id}'.")
@@ -43,11 +44,10 @@ def get_branches(api, repo_id):
         raise
 
 def main():
-    parser = argparse.ArgumentParser(description="Manage branches in HuggingFace Hub.")
+    parser = argparse.ArgumentParser(description="Manage branches in HuggingFace Hub. Create and delete operations require login with `huggingface-cli login`, or passing a token with `--token`.")
     parser.add_argument("command", choices=['create', 'delete', 'list'], help="Command to execute.")
     parser.add_argument("repo_id", help="Repository ID.")
     parser.add_argument("branch", nargs='?', default=None, help="Branch name (for create/delete commands).")
-    parser.add_argument("--exist_ok", action="store_true", help="Whether existing branch creation is okay (applies only to 'create' command).")
     parser.add_argument("--token", type=str, help="Use to specify an HF token. Otherwise it is assumed you are already logged into to HF using `huggingface-cli login`")
 
     args = parser.parse_args()
@@ -59,7 +59,7 @@ def main():
                 if not args.branch:
                     print("Error: Branch name required for create command.")
                     return
-                create_branch(api=api, repo_id=args.repo_id, branch=args.branch, exist_ok=args.exist_ok)
+                create_branch(api=api, repo_id=args.repo_id, branch=args.branch)
             elif args.command == "delete":
                 if not args.branch:
                     print("Error: Branch name required for delete command.")
