@@ -38,7 +38,7 @@ def run_hub_download(repo_id, filename, local_dir, branch="main", token=True, lo
             logger.info(f"Retrying {try_count} of {max_tries}")
             time.sleep(1)
     if retry:
-        logger.error(f"Failed to download {repo_id} after {max_tries} tries. Exiting.")
+        logger.error(f"Failed to download {repo_id}/{filename} after {max_tries} tries. Exiting.")
         return False
     else:
         return True
@@ -51,7 +51,7 @@ def hf_download(repo_id, filename, local_dir, branch="main", fast=True, cache_di
         os.environ['HF_HUB_ENABLE_HF_TRANSFER'] = "0"
         transfer = "slow"
 
-    logger.info(f'Doing {transfer} download of {repo_id} to {local_dir}. Symlinks = {local_dir_use_symlinks}')
+    logger.info(f'Doing {transfer} download of {repo_id}/{filename} to {local_dir}. Symlinks = {local_dir_use_symlinks}')
     if cache_dir is not None:
         os.environ['HF_HOME'] = cache_dir
         logger.info(f'Cache dir set to {cache_dir}')
