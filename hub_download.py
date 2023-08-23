@@ -1,6 +1,9 @@
 #
 # Download models from Hugging Face Hub, including at fast speed using hf_transfer
+# NOTE: requires `pip3 install hf_transfer` for fast transfers (the default)
 #
+
+#TODO: disable fast downloads if hf_transfer is not installed
 
 import logging
 import time
