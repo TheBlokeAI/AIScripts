@@ -1,7 +1,10 @@
 #
 # Download a single file from Hugging Face hub
 # This should probably be a method in hub_download.py instead
+# NOTE: requires `pip3 install hf_transfer` for fast transfers (the default)
 #
+
+#TODO: disable fast downloads if hf_transfer is not installed
 
 import logging
 import time
