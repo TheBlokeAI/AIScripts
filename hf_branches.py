@@ -7,33 +7,40 @@
 import argparse
 from huggingface_hub import HfApi
 
-def create_branch(api, repo_id, branch):
+def create_branch(api, repo_id, branch, quiet=False):
     try:
         if branch not in get_branches(api, repo_id):
             api.create_branch(repo_id=repo_id, branch=branch)
-            print(f"Successfully created branch '{branch}' in repo '{repo_id}'.")
+            if not quiet:
+                print(f"Successfully created branch '{branch}' in repo '{repo_id}'.")
         else:
             print(f"Branch '{branch}' already exists in repo '{repo_id}'.")
     except Exception:
         print(f"Error creating branch '{branch}' on '{repo_id}'.")
         raise
 
-def delete_branch(api, repo_id, branch):
+def delete_branch(api, repo_id, branch, quiet=False):
     try:
         if branch in get_branches(api, repo_id):
             api.delete_branch(repo_id=repo_id, branch=branch)
-            print(f"Successfully deleted branch '{branch}' in repo '{repo_id}'.")
+            if not quiet:
+                print(f"Successfully deleted branch '{branch}' in repo '{repo_id}'.")
         else:
-            print(f"Branch '{branch}' does not exist in repo '{repo_id}'.")
+            if not quiet:
+                print(f"Branch '{branch}' does not exist in repo '{repo_id}'.")
     except Exception:
         print(f"Error deleting branch '{branch}' on '{repo_id}'.")
         raise
 
-def list_branches(api, repo_id):
+def list_branches(api, repo_id, quiet=False):
     branch_list = get_branches(api, repo_id)
-    print(f"Branches in {repo_id}:")
+    if not quiet:
+        print(f"Branches in {repo_id}:")
     for branch in branch_list:
-        print(f" * {branch}")
+        if not quiet:
+            print(f" * {branch}")
+        else:
+            print(branch)
 
 def get_branches(api, repo_id):
     try:
@@ -49,6 +56,7 @@ def main():
     parser.add_argument("repo_id", help="Repository ID.")
     parser.add_argument("branch", nargs='?', default=None, help="Branch name (for create/delete commands).")
     parser.add_argument("--token", type=str, help="Use to specify an HF token. Otherwise it is assumed you are already logged into to HF using `huggingface-cli login`")
+    parser.add_argument('-q', "--quiet", action="store_true", help="Don't output anything (except necessary text)")
 
     args = parser.parse_args()
 
@@ -59,14 +67,14 @@ def main():
                 if not args.branch:
                     print("Error: Branch name required for create command.")
                     return
-                create_branch(api=api, repo_id=args.repo_id, branch=args.branch)
+                create_branch(api=api, repo_id=args.repo_id, branch=args.branch, quiet=args.quiet)
             elif args.command == "delete":
                 if not args.branch:
                     print("Error: Branch name required for delete command.")
                     return
-                delete_branch(api=api, repo_id=args.repo_id, branch=args.branch)
+                delete_branch(api=api, repo_id=args.repo_id, branch=args.branch, quiet=args.quiet)
             elif args.command == "list":
-                list_branches(api=api, repo_id=args.repo_id)
+                list_branches(api=api, repo_id=args.repo_id, quiet=args.quiet)
         except Exception as e:
             print(f"Exception while running command '{args.command}': {e}")
             print("Cannot continue.")
