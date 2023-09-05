@@ -76,7 +76,7 @@ def run_snapshot_download(repo_id, local_dir, queue, branch="main", token=True, 
     else:
         queue.put(True)
 
-def hf_snapshot_download(repo_id, local_dir, branch="main", log_period=15, fast=True, cache_dir=None, ignore_patterns=[], local_dir_use_symlinks=False):
+def hf_snapshot_download(repo_id, local_dir, branch="main", log_period=15, fast=True, cache_dir=None, ignore_patterns=[], local_dir_use_symlinks=False, token=None):
     if fast:
         os.environ['HF_HUB_ENABLE_HF_TRANSFER'] = "1"
         transfer = 'fast'
@@ -94,7 +94,7 @@ def hf_snapshot_download(repo_id, local_dir, branch="main", log_period=15, fast=
     try:
         queue = Queue()
         p = Process(target=run_snapshot_download, args=(repo_id, local_dir, queue),
-                    kwargs={'branch': branch, 'ignore_patterns': ignore_patterns, 'local_dir_use_symlinks': local_dir_use_symlinks})
+                    kwargs={'branch': branch, 'ignore_patterns': ignore_patterns, 'local_dir_use_symlinks': local_dir_use_symlinks, 'token': token})
         p.start()
 
         t = RepeatTimer(log_period, log_size, [start_time, local_dir, repo_id],
@@ -131,6 +131,7 @@ if __name__ == "__main__":
     parser.add_argument('--log_every', type=int, default=15, help='Log download progress every N seconds')
     parser.add_argument('--cache_dir', type=str, help='Set the HF cache folder')
     parser.add_argument('--branch', type=str, default="main", help='Branch to download from')
+    parser.add_argument('--token', type=str, default="main", help='Use custom token')
     parser.add_argument('--symlinks', type=str, choices=['true', 'false', 'auto'], default="auto", help='Set to download to cache dir and symlink to target folder')
     parser.add_argument('--fast', '-f', type=str, default="1", help='Set to 1 to download fast (HF_HUB_ENABLE_HF_TRANSFER)')
     parser.add_argument('--ignore', '-i', nargs='+', type=str, help='patterns to ignore')
@@ -141,6 +142,7 @@ if __name__ == "__main__":
                             branch=args.branch,
                             fast=args.fast,
                             log_period=args.log_every,
+                            token=args.token,
                             ignore_patterns=args.ignore,
                             local_dir_use_symlinks=args.symlinks):
         logger.info("Downloaded successfully")
