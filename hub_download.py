@@ -76,7 +76,7 @@ def run_snapshot_download(repo_id, local_dir, queue, branch="main", token=True, 
     else:
         queue.put(True)
 
-def hf_snapshot_download(repo_id, local_dir, branch="main", log_period=15, fast=True, cache_dir=None, ignore_patterns=[], local_dir_use_symlinks=False, token=None):
+def hf_snapshot_download(repo_id, local_dir, branch="main", log_period=15, fast=True, cache_dir=None, ignore_patterns=[], local_dir_use_symlinks=False, token=True):
     if fast:
         os.environ['HF_HUB_ENABLE_HF_TRANSFER'] = "1"
         transfer = 'fast'
@@ -131,12 +131,13 @@ if __name__ == "__main__":
     parser.add_argument('--log_every', type=int, default=15, help='Log download progress every N seconds')
     parser.add_argument('--cache_dir', type=str, help='Set the HF cache folder')
     parser.add_argument('--branch', type=str, default="main", help='Branch to download from')
-    parser.add_argument('--token', type=str, default="main", help='Use custom token')
+    parser.add_argument('--token', type=str, help='Use custom token')
     parser.add_argument('--symlinks', type=str, choices=['true', 'false', 'auto'], default="auto", help='Set to download to cache dir and symlink to target folder')
     parser.add_argument('--fast', '-f', type=str, default="1", help='Set to 1 to download fast (HF_HUB_ENABLE_HF_TRANSFER)')
     parser.add_argument('--ignore', '-i', nargs='+', type=str, help='patterns to ignore')
     args = parser.parse_args()
 
+    token = args.token or True
     if hf_snapshot_download(args.repo, args.model_folder,
                             cache_dir=args.cache_dir,
                             branch=args.branch,
