@@ -25,11 +25,27 @@ branch = args.branch
 
 api = HfApi(token = True)
 
+def hub_get_last_commit(repo_id):
+    retry = True
+    try_count = 0
+    max_tries = 10 
+    while retry and try_count < max_tries:
+        try:
+            commits = api.list_repo_commits(repo_id = repo_id)
+            retry = False
+        except Exception as e:
+            print(f"Error getting commits for: {repo_id} - {e}")
+            try_count += 1
+            time.sleep(1)   
+    return commits[-1].commit_id
+
 if branch:
     print(f"Creating and using branch {branch}")
     try:
         api.create_branch(repo_id=repo,
             repo_type="model",
+            # Create new branches as of the first commit in the repo, ie empty
+            revision=hub_get_last_commit(repo),
             branch=branch)
     except:
         print("Couldn't create branch - probably already exists?")
