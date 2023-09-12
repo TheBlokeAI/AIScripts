@@ -92,6 +92,10 @@ def hf_snapshot_download(repo_id, local_dir, branch="main", log_period=15, fast=
     start_time = time.time()
 
     try:
+        if not os.path.isdir(local_dir):
+            logger.info(f"Creating {local_dir}")
+            os.makedirs(local_dir, exist_ok=True)
+
         queue = Queue()
         p = Process(target=run_snapshot_download, args=(repo_id, local_dir, queue),
                     kwargs={'branch': branch, 'ignore_patterns': ignore_patterns, 'local_dir_use_symlinks': local_dir_use_symlinks, 'token': token})
