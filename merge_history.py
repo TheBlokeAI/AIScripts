@@ -42,8 +42,9 @@ def acquire_lock_or_timeout(file_obj):
     return False
 
 def main():
-    os.makedirs(f"/workspace/{args.typehost}", exist_ok=True)
-    existing_history_file = f"/workspace/{args.typehost}/.zsh_history"
+    BASE_DIR = "/workspace/zsh_history"
+    os.makedirs(f"{BASE_DIR}/{args.typehost}", exist_ok=True)
+    existing_history_file = f"{BASE_DIR}/{args.typehost}/.zsh_history"
 
     with open(existing_history_file, 'a') as f:
         if not acquire_lock_or_timeout(f):
