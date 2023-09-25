@@ -219,6 +219,8 @@ class QuantAutoGPTQ:
 
         self.logger.info(f"Saving quantized model to {output_dir}")
         model.save_quantized(output_dir, use_safetensors=True)
+        self.logger.info(f"Saving tokenizer to {output_dir}")
+        tokenizer.save_pretrained(output_dir)
         self.logger.info("Done.")
 
     def run_quantization(self):
