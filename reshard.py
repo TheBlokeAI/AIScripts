@@ -43,7 +43,7 @@ def main():
 
     tokenizer = AutoTokenizer.from_pretrained(args.base_model_name_or_path)
 
-    model.save_pretrained(args.output_dir, max_shard_size=args.max_shard_size)
+    model.save_pretrained(args.output_dir, max_shard_size=args.max_shard_size, safe_serialization=True)
     tokenizer.save_pretrained(f"{args.output_dir}")
     print(f"Model saved to {args.output_dir} with max_shard_size={args.max_shard_size}")
 
