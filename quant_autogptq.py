@@ -110,6 +110,17 @@ class QuantAutoGPTQ:
 
         return self.append_dataset(tokenized, self.num_samples, self.seqlen)
 
+    def get_spanish(self):
+        data = load_dataset('bertin-project/alpaca-spanish', split='train')
+
+        subset_data = data.select(range(5000))
+        text = '\n'.join([item['output'] for item in subset_data)
+
+        self.logger.info("Tokenising Spanish dataset")
+        tokenized = self.tokenizer(text, return_tensors='pt')
+
+        return self.append_dataset(tokenized, self.num_samples, self.seqlen)
+
     def get_german(self):
         data = load_dataset('deepset/germanquad', split='train')
 
@@ -220,6 +231,8 @@ class QuantAutoGPTQ:
             traindataset = self.get_math()
         elif self.dataset == 'medical' or self.dataset == 'medical_meadow_wikidoc':
             traindataset = self.get_medical()
+        elif self.dataset == 'spanish':
+            traindataset = self.get_spanish()
         elif self.dataset == 'german' or self.dataset == 'germanquad':
             traindataset = self.get_german()
         elif self.dataset == 'french' or self.dataset == 'diverse_french_news':
