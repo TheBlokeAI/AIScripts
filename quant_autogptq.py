@@ -114,7 +114,7 @@ class QuantAutoGPTQ:
         data = load_dataset('bertin-project/alpaca-spanish', split='train')
 
         subset_data = data.select(range(5000))
-        text = '\n'.join([item['output'] for item in subset_data)
+        text = '\n'.join(item['output'] for item in subset_data)
 
         self.logger.info("Tokenising Spanish dataset")
         tokenized = self.tokenizer(text, return_tensors='pt')
@@ -220,7 +220,7 @@ class QuantAutoGPTQ:
         self.logger.info(f"Saving quantized model to {output_dir}")
         model.save_quantized(output_dir, use_safetensors=True)
         self.logger.info(f"Saving tokenizer to {output_dir}")
-        tokenizer.save_pretrained(output_dir)
+        self.tokenizer.save_pretrained(output_dir)
         self.logger.info("Done.")
 
     def run_quantization(self):
